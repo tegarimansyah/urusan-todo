@@ -1,7 +1,7 @@
 import { Header } from '@/components/header';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useProfile } from '@/contexts/profile-context';
+import useProfileStore from '@/stores/useProfileStore';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 export function Profile() {
-  const { profile, updateBio, addRole, archiveRole, deleteRole, restoreRole } = useProfile();
+  const { profile, updateBio, addRole, archiveRole, deleteRole, restoreRole } = useProfileStore();
   const [bio, setBio] = useState(profile.bio);
   const [newRole, setNewRole] = useState('');
   const userInitials = 'U'; // In a real app, this would come from user data
