@@ -1,6 +1,7 @@
 import { Plus, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import useTaskStore from '@/stores/useTaskStore';
+import useProfileStore from '@/stores/useProfileStore';
 import {
   Select,
   SelectContent,
@@ -18,18 +19,29 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 
 export function SearchBar() {
   const { 
     searchTasks, 
     createTask, 
-    activities, 
+    activities,
     selectedActivity, 
     selectActivity, 
     createActivity 
   } = useTaskStore();
+  const { profile } = useProfileStore();
   
-  const [newActivityName, setNewActivityName] = useState('');
+  const [newActivity, setNewActivity] = useState({
+    name: '',
+    roleId: '',
+    notes: '',
+    isComplex: true,
+    isRemarkable: false,
+    isRepetitive: false,
+  });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -43,9 +55,16 @@ export function SearchBar() {
   };
 
   const handleCreateActivity = () => {
-    if (newActivityName) {
-      createActivity({ name: newActivityName });
-      setNewActivityName('');
+    if (newActivity.name && newActivity.roleId) {
+      createActivity(newActivity);
+      setNewActivity({
+        name: '',
+        roleId: '',
+        notes: '',
+        isComplex: true,
+        isRemarkable: false,
+        isRepetitive: false,
+      });
       setIsDialogOpen(false);
     }
   };
@@ -82,7 +101,7 @@ export function SearchBar() {
         </Select>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent>
+          <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Create New Activity</DialogTitle>
             </DialogHeader>
@@ -91,12 +110,88 @@ export function SearchBar() {
                 <Label htmlFor="activityName">Activity Name</Label>
                 <Input
                   id="activityName"
-                  value={newActivityName}
-                  onChange={(e) => setNewActivityName(e.target.value)}
+                  value={newActivity.name}
+                  onChange={(e) => setNewActivity({ ...newActivity, name: e.target.value })}
                   placeholder="Enter activity name"
                 />
               </div>
-              <Button onClick={handleCreateActivity} disabled={!newActivityName}>
+
+              <div className="space-y-2">
+                <Label htmlFor="roleId">Role</Label>
+                <Select
+                  value={newActivity.roleId}
+                  onValueChange={(value) => setNewActivity({ ...newActivity, roleId: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {profile.roles
+                      .filter(role => !role.archived)
+                      .map((role) => (
+                        <SelectItem key={role.id} value={role.id}>
+                          {role.name}
+                        </SelectItem>
+                      ))
+                    }
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="notes">Notes (Optional)</Label>
+                <Textarea
+                  id="notes"
+                  value={newActivity.notes}
+                  onChange={(e) => setNewActivity({ ...newActivity, notes: e.target.value })}
+                  placeholder="Add any notes about this activity"
+                />
+              </div>
+
+              <RadioGroup
+                value={newActivity.isComplex ? "complex" : "simple"}
+                onValueChange={(value) => 
+                  setNewActivity({ ...newActivity, isComplex: value === "complex" })
+                }
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="simple" id="simple" />
+                  <Label htmlFor="simple">Simple</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="complex" id="complex" />
+                  <Label htmlFor="complex">Complex</Label>
+                </div>
+              </RadioGroup>
+
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="remarkable"
+                    checked={newActivity.isRemarkable}
+                    onCheckedChange={(checked) => 
+                      setNewActivity({ ...newActivity, isRemarkable: checked as boolean })
+                    }
+                  />
+                  <Label htmlFor="remarkable">Remarkable</Label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="repetitive"
+                    checked={newActivity.isRepetitive}
+                    onCheckedChange={(checked) => 
+                      setNewActivity({ ...newActivity, isRepetitive: checked as boolean })
+                    }
+                  />
+                  <Label htmlFor="repetitive">Repetitive</Label>
+                </div>
+              </div>
+
+              <Button 
+                onClick={handleCreateActivity} 
+                disabled={!newActivity.name || !newActivity.roleId}
+              >
                 Create Activity
               </Button>
             </div>

@@ -18,6 +18,11 @@ export interface Task {
 export interface Activity {
   id: string;
   name: string;
+  roleId: string;
+  notes?: string;
+  isComplex: boolean;
+  isRemarkable: boolean;
+  isRepetitive: boolean;
   color?: string;
 }
 
@@ -65,7 +70,7 @@ const useTaskStore = create<TaskStore>()(
           definitionOfDone: taskData.definitionOfDone,
           dueDate: taskData.dueDate,
           fundsNeeded: taskData.fundsNeeded,
-          activityId: get().selectedActivity || undefined,
+          activityId: taskData.activityId || get().selectedActivity || undefined,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
@@ -137,12 +142,26 @@ const useTaskStore = create<TaskStore>()(
         const activity: Activity = {
           id: crypto.randomUUID(),
           name: activityData.name || 'New Activity',
+          roleId: activityData.roleId!,
+          notes: activityData.notes,
+          isComplex: activityData.isComplex ?? true,
+          isRemarkable: activityData.isRemarkable ?? false,
+          isRepetitive: activityData.isRepetitive ?? false,
           color: activityData.color,
         };
         
         set((state) => ({
           activities: [...state.activities, activity],
         }));
+
+        console.log({activity})
+        if (!activity.isComplex) {
+          get().createTask({
+            title: activity.name,
+            activityId: activity.id,
+          });
+        }
+
         toast.success('Activity created successfully');
       },
 
