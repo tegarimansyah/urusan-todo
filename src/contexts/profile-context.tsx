@@ -22,6 +22,7 @@ interface ProfileContextType {
   archiveRole: (id: string) => Promise<void>;
   deleteRole: (id: string) => Promise<void>;
   restoreRole: (id: string) => Promise<void>;
+  checkNoRoles: () => boolean;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -185,6 +186,10 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const checkNoRoles = () => {
+    return profile.roles.length === 0;
+  };
+
   return (
     <ProfileContext.Provider
       value={{
@@ -194,6 +199,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         archiveRole,
         deleteRole,
         restoreRole,
+        checkNoRoles,
       }}
     >
       {children}
