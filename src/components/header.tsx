@@ -1,9 +1,8 @@
 import { Bell, Settings, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export function Header() {
-  const navigate = useNavigate();
 
   return (
     <header className="border-b bg-white/50 backdrop-blur-sm">
