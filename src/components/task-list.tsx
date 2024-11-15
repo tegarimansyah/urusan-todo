@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { useTask } from '@/contexts/task-context';
+import useTaskStore from '@/stores/useTaskStore';
 import {
   Card,
   CardContent,
@@ -10,7 +10,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 
 export function TaskList() {
-  const { filteredTasks, selectTask, folders } = useTask();
+  const { filteredTasks, selectTask, activities } = useTaskStore();
 
   if (filteredTasks.length === 0) {
     return (
@@ -38,9 +38,9 @@ export function TaskList() {
                   </CardDescription>
                 )}
               </div>
-              {task.folderId && (
+              {task.activityId && (
                 <Badge variant="secondary">
-                  {folders.find((f) => f.id === task.folderId)?.name}
+                  {activities.find((f) => f.id === task.activityId)?.name}
                 </Badge>
               )}
             </div>

@@ -1,6 +1,6 @@
 import { Plus, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { useTask } from '@/contexts/task-context';
+import useTaskStore from '@/stores/useTaskStore';
 import {
   Select,
   SelectContent,
@@ -20,8 +20,16 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 
 export function SearchBar() {
-  const { searchTasks, createTask, folders, selectedFolder, selectFolder, createFolder } = useTask();
-  const [newFolderName, setNewFolderName] = useState('');
+  const { 
+    searchTasks, 
+    createTask, 
+    activities, 
+    selectedActivity, 
+    selectActivity, 
+    createActivity 
+  } = useTaskStore();
+  
+  const [newActivityName, setNewActivityName] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -34,10 +42,10 @@ export function SearchBar() {
     }
   };
 
-  const handleCreateFolder = () => {
-    if (newFolderName) {
-      createFolder({ name: newFolderName });
-      setNewFolderName('');
+  const handleCreateActivity = () => {
+    if (newActivityName) {
+      createActivity({ name: newActivityName });
+      setNewActivityName('');
       setIsDialogOpen(false);
     }
   };
@@ -46,29 +54,29 @@ export function SearchBar() {
     <div className="flex flex-col sm:flex-row gap-2">
       <div className="w-full sm:w-48">
         <Select 
-          value={selectedFolder || 'all'} 
+          value={selectedActivity || 'all'} 
           onValueChange={(value) => {
             if (value === 'new') {
               setIsDialogOpen(true);
             } else {
-              selectFolder(value === 'all' ? null : value);
+              selectActivity(value === 'all' ? null : value);
             }
           }}
         >
           <SelectTrigger className="h-10">
-            <SelectValue placeholder="All Folders" />
+            <SelectValue placeholder="All Activities" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Folders</SelectItem>
-            {folders.map((folder) => (
-              <SelectItem key={folder.id} value={folder.id}>
-                {folder.name}
+            <SelectItem value="all">All Activities</SelectItem>
+            {activities.map((activity) => (
+              <SelectItem key={activity.id} value={activity.id}>
+                {activity.name}
               </SelectItem>
             ))}
             <Separator className="my-2" />
             <SelectItem value="new" className="text-primary">
               <Plus className="h-4 w-4 mr-2 inline-block" />
-              Create New Folder
+              Create New Activity
             </SelectItem>
           </SelectContent>
         </Select>
@@ -76,20 +84,20 @@ export function SearchBar() {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create New Folder</DialogTitle>
+              <DialogTitle>Create New Activity</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="folderName">Folder Name</Label>
+                <Label htmlFor="activityName">Activity Name</Label>
                 <Input
-                  id="folderName"
-                  value={newFolderName}
-                  onChange={(e) => setNewFolderName(e.target.value)}
-                  placeholder="Enter folder name"
+                  id="activityName"
+                  value={newActivityName}
+                  onChange={(e) => setNewActivityName(e.target.value)}
+                  placeholder="Enter activity name"
                 />
               </div>
-              <Button onClick={handleCreateFolder} disabled={!newFolderName}>
-                Create Folder
+              <Button onClick={handleCreateActivity} disabled={!newActivityName}>
+                Create Activity
               </Button>
             </div>
           </DialogContent>

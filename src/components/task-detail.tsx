@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon, DollarSign, X } from 'lucide-react';
-import { useTask } from '@/contexts/task-context';
+import useTaskStore from '@/stores/useTaskStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -34,8 +34,8 @@ export function TaskDetail() {
     discardTaskDraft, 
     deleteTask, 
     selectTask,
-    folders 
-  } = useTask();
+    activities 
+  } = useTaskStore();
 
   if (!taskDraft) return null;
 
@@ -52,9 +52,9 @@ export function TaskDetail() {
     });
   };
 
-  const handleFolderSelect = (folderId: string) => {
+  const handleActivitySelect = (activityId: string) => {
     updateTaskDraft({
-      folderId: folderId === 'none' ? undefined : folderId,
+      activityId: activityId === 'none' ? undefined : activityId,
     });
   };
 
@@ -90,19 +90,19 @@ export function TaskDetail() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="folder">Folder</Label>
+          <Label htmlFor="activity">Activity</Label>
           <Select
-            value={taskDraft.folderId || 'none'}
-            onValueChange={handleFolderSelect}
+            value={taskDraft.activityId || 'none'}
+            onValueChange={handleActivitySelect}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select folder" />
+              <SelectValue placeholder="Select activity" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">No Folder</SelectItem>
-              {folders.map((folder) => (
-                <SelectItem key={folder.id} value={folder.id}>
-                  {folder.name}
+              <SelectItem value="none">No Activity</SelectItem>
+              {activities.map((activity) => (
+                <SelectItem key={activity.id} value={activity.id}>
+                  {activity.name}
                 </SelectItem>
               ))}
             </SelectContent>

@@ -1,8 +1,6 @@
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { MainLayout } from '@/layouts/main-layout';
-import { TaskProvider } from '@/contexts/task-context';
-import { SettingsProvider } from '@/contexts/settings-context';
 import { Routes, Route } from 'react-router-dom';
 import { Settings } from '@/pages/settings';
 import { Profile } from '@/pages/profile';
@@ -18,7 +16,7 @@ function App() {
   const { profile, addRole } = useProfileStore();
 
   useEffect(() => {
-    if (profile.roles.length === 0) {
+    if (profile.roles.filter((role) => role.archived === false).length === 0) {
       setIsModalOpen(true);
     }
   }, [profile.roles]);
@@ -33,33 +31,29 @@ function App() {
 
   return (
     <ThemeProvider defaultTheme="light">
-      <SettingsProvider>
-        <TaskProvider>
-          <Routes>
-            <Route path="/" element={<MainLayout />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
-          <Toaster position="bottom-right" />
-          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add a Role</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <Input
-                  value={newRoleName}
-                  onChange={(e) => setNewRoleName(e.target.value)}
-                  placeholder="Enter role name"
-                />
-                <Button onClick={handleAddRole} disabled={!newRoleName.trim()}>
-                  Add Role
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </TaskProvider>
-      </SettingsProvider>
+      <Routes>
+        <Route path="/" element={<MainLayout />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
+      <Toaster position="bottom-right" />
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Your First Active Role</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              value={newRoleName}
+              onChange={(e) => setNewRoleName(e.target.value)}
+              placeholder="Enter role name"
+            />
+            <Button onClick={handleAddRole} disabled={!newRoleName.trim()}>
+              Add Role
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </ThemeProvider>
   );
 }

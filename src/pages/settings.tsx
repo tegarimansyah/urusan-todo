@@ -1,5 +1,5 @@
 import { Header } from '@/components/header';
-import { useSettings } from '@/contexts/settings-context';
+import useSettingsStore from '@/stores/useSettingsStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,16 +10,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useEffect } from 'react';
 
 export function Settings() {
-  const { settings, updateSettings } = useSettings();
+  const { 
+    settings,
+    draftSettings, 
+    updateDraft, 
+    saveSettings, 
+    revertSettings,
+    resetToDefaults 
+  } = useSettingsStore();
+
+  // Initialize draft with current settings when component mounts
+  useEffect(() => {
+    revertSettings();
+  }, [revertSettings]);
+
+  const hasChanges = JSON.stringify(settings) !== JSON.stringify(draftSettings);
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto space-y-8">
-          <h1 className="text-3xl font-bold">Settings</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold">Settings</h1>
+          </div>
           
           <div className="space-y-6">
             <div className="space-y-2">
@@ -27,8 +44,8 @@ export function Settings() {
               <Input
                 id="apiKey"
                 type="password"
-                value={settings.apiKey || ''}
-                onChange={(e) => updateSettings({ apiKey: e.target.value })}
+                value={draftSettings.apiKey || ''}
+                onChange={(e) => updateDraft({ apiKey: e.target.value })}
                 placeholder="sk-..."
               />
             </div>
@@ -36,9 +53,9 @@ export function Settings() {
             <div className="space-y-2">
               <Label htmlFor="theme">Theme</Label>
               <Select
-                value={settings.theme}
+                value={draftSettings.theme}
                 onValueChange={(theme) => 
-                  updateSettings({ theme: theme as 'light' | 'dark' | 'system' })
+                  updateDraft({ theme: theme as 'light' | 'dark' | 'system' })
                 }
               >
                 <SelectTrigger>
@@ -51,10 +68,36 @@ export function Settings() {
                 </SelectContent>
               </Select>
             </div>
-
-            <Button onClick={() => updateSettings({ apiKey: '', theme: 'system' })}>
-              Reset to Defaults
-            </Button>
+{/* 
+            <div className="border-t pt-6">
+              <Button 
+                variant="destructive" 
+                onClick={resetToDefaults}
+              >
+                Reset to Defaults
+              </Button>
+            </div> */}
+            <div className="border-t pt-6 flex gap-2">
+              {hasChanges ? (
+                <>
+                <Button variant="destructive" onClick={resetToDefaults}>
+                  Reset to Defaults
+                </Button>
+                  <Button onClick={saveSettings}>
+                    Save Changes
+                  </Button>
+                </>
+              ) :
+                <>
+                <Button variant="destructive" disabled>
+                  Reset to Defaults
+                </Button>
+                  <Button disabled>
+                    Save Changes
+                  </Button>
+                </>
+              }
+            </div>
           </div>
         </div>
       </main>
