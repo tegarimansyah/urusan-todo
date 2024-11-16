@@ -1,9 +1,10 @@
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
-import { MainLayout } from '@/layouts/main-layout';
+import { RootLayout } from '@/layouts/root-layout';
 import { Routes, Route } from 'react-router-dom';
 import { Settings } from '@/pages/settings';
 import { Profile } from '@/pages/profile';
+import { IndexPage } from '@/pages/index';
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -31,11 +32,13 @@ function App() {
 
   return (
     <ThemeProvider defaultTheme="light">
-      <Routes>
-        <Route path="/" element={<MainLayout />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
+      <RootLayout>
+        <Routes>
+          <Route path="/" element={<IndexPage />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </RootLayout>
       <Toaster position="bottom-right" />
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>

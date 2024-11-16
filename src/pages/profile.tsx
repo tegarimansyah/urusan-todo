@@ -1,4 +1,3 @@
-import { Header } from '@/components/header';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import useProfileStore from '@/stores/useProfileStore';
@@ -40,7 +39,6 @@ export function Profile() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto space-y-8">
           <div className="flex items-center space-x-4">
